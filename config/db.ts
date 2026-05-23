@@ -112,6 +112,9 @@ export async function getDB(): Promise<Database> {
   }
 
   if (!dbInstance) {
+    if (process.env.VERCEL === '1') {
+      throw new Error('DATABASE CONNECTION ERROR: Database MySQL gagal terhubung pada lingkungan Vercel. Harap periksa apakah Environment Variables Anda sudah benar dan lengkap.');
+    }
     console.log('Initializing local SQLite database (for sandbox preview)...');
     const dbPath = path.resolve(process.cwd(), 'bengkel.db');
     dbInstance = new SQLiteDatabase(dbPath);
