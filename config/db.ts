@@ -1,4 +1,3 @@
-import sqlite3 from 'sqlite3';
 import mysql from 'mysql2/promise';
 import fs from 'fs';
 import path from 'path';
@@ -15,10 +14,10 @@ export interface Database {
 let dbInstance: Database | null = null;
 
 class SQLiteDatabase implements Database {
-  private db: sqlite3.Database;
+  private db: any;
 
-  constructor(filePath: string) {
-    this.db = new sqlite3.Database(filePath);
+  constructor(sqlite3Lib: any, filePath: string) {
+    this.db = new sqlite3Lib.Database(filePath);
   }
 
   isMySQL(): boolean {
@@ -116,8 +115,9 @@ export async function getDB(): Promise<Database> {
       throw new Error('DATABASE CONNECTION ERROR: Database MySQL gagal terhubung pada lingkungan Vercel. Harap periksa apakah Environment Variables Anda sudah benar dan lengkap.');
     }
     console.log('Initializing local SQLite database (for sandbox preview)...');
+    const sqlite3 = await import('sqlite3');
     const dbPath = path.resolve(process.cwd(), 'bengkel.db');
-    dbInstance = new SQLiteDatabase(dbPath);
+    dbInstance = new SQLiteDatabase(sqlite3.default, dbPath);
     await initSQLite(dbInstance);
   }
 
