@@ -34,9 +34,12 @@ async function startServer() {
     const db = await getDB();
     console.log('Database pool verified.');
 
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`Express app running on http://localhost:${PORT}`);
-    });
+    // Only start listening if not running on Vercel (serverless mode)
+    if (process.env.VERCEL !== '1') {
+      app.listen(PORT, '0.0.0.0', () => {
+        console.log(`Express app running on http://localhost:${PORT}`);
+      });
+    }
   } catch (err) {
     console.error('Fatal: Failed to startup full-stack accountant application:', err);
     process.exit(1);
