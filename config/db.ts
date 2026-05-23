@@ -66,6 +66,9 @@ class MySQLDatabase implements Database {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
+      ssl: {
+        rejectUnauthorized: false
+      }
     });
   }
 
