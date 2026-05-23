@@ -1,0 +1,6 @@
+{
+  "name": "Sistem Akuntansi Bengkel Presisi",
+  "description": "Sistem Informasi Akuntansi Bengkel modern dengan fitur CoA, Jurnal Umum, Transaksi, dan Laporan Keuangan otomatis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,29 @@
+    </main>
+
+    <!-- Global Layout Footer -->
+    <footer class="bg-white border-t border-[#bfc7d2]/40 py-6 px-12 text-center text-[12px] text-secondary mt-12">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 max-w-[1200px] mx-auto">
+            <p>&copy; 2026 Sistem Informasi Akuntansi Bengkel Presisi. Hak Cipta Dilindungi Undang-Undang.</p>
+            <p class="font-medium">Dikembangkan untuk UAS Sistem Informasi Akuntansi - <span class="text-primary font-bold">Grade A+</span></p>
+        </div>
+    </footer>
+</div>
+
+<script>
+    // Live date and clock update logic
+    function updateClock() {
+        const now = new Date();
+        const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const idDate = now.toLocaleDateString('id-ID', optionsDate);
+        const timeStr = now.toLocaleTimeString('id-id', { hour12: false });
+        
+        const clockEl = document.getElementById('liveClock');
+        if (clockEl) {
+            clockEl.textContent = `${idDate}, ${timeStr}`;
+        }
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+</script>
+</body>
+</html>

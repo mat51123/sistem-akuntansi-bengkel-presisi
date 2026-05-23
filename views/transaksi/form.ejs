@@ -1,0 +1,339 @@
+<%- include('../partials/header') %>
+
+<!-- Alert Banners -->
+<% if (error) { %>
+    <div class="mb-6 p-4 bg-red-100 text-red-800 border-l-4 border-red-500 rounded-r-lg text-[13px] flex items-center justify-between shadow-sm animate-pulse">
+        <span class="font-medium flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">error</span>
+            <%= error %>
+        </span>
+        <button onclick="this.parentElement.remove()" class="text-red-800 hover:opacity-80 font-bold">&times;</button>
+    </div>
+<% } %>
+
+<% if (success) { %>
+    <div class="mb-6 p-4 bg-emerald-100 text-emerald-800 border-l-4 border-emerald-500 rounded-r-lg text-[13px] flex items-center justify-between shadow-sm animate-bounce">
+        <span class="font-medium flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">check_circle</span>
+            <%= success %>
+        </span>
+        <button onclick="this.parentElement.remove()" class="text-emerald-800 hover:opacity-80 font-bold">&times;</button>
+    </div>
+<% } %>
+
+<!-- Page Title Header -->
+<div class="mb-8">
+    <h3 class="text-[26px] font-bold text-slate-950 tracking-tight">Form Input Transaksi Jurnal</h3>
+    <p class="text-[14px] text-[#505f76] mt-1">Gunakan formulir multi-item di bawah ini untuk mencatat transaksi dengan menjurnal Debit dan Kredit sekaligus.</p>
+</div>
+
+<!-- Main Forms Container Grid -->
+<form action="/transaksi" method="POST" onsubmit="return validateFormSubmit(event)" class="space-y-6">
+    
+    <!-- Row 1: Transaksi Metadata Card -->
+    <div class="bg-white rounded-lg border border-[#bfc7d2]/60 shadow-sm p-6">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            <div class="md:col-span-4">
+                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wider mb-2">Tanggal Transaksi</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-[20px] pointer-events-none">calendar_today</span>
+                    <input type="date" name="tanggal" required id="tx_tanggal" class="w-full rounded-md border-slate-300 pl-10 text-[13px] focus:border-primary focus:ring-primary">
+                </div>
+            </div>
+            <div class="md:col-span-8">
+                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wider mb-2">Keterangan / Memo Deskripsi</label>
+                <textarea name="keterangan" required rows="1" placeholder="Contoh: Penerimaan Pendapatan Jasa Servis Motor Honda BeAT - B 6543 ABC" class="w-full rounded-md border-slate-300 text-[13px] focus:border-primary focus:ring-primary py-2.5 resize-none"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 2: Detail Entri Jurnal Table -->
+    <div class="bg-white rounded-lg border border-[#bfc7d2]/60 shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-[#bfc7d2]/30 bg-slate-50 flex justify-between items-center">
+            <h4 class="font-bold text-[15px] text-slate-900 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">reorder</span>
+                Daftar Baris Jurnal
+            </h4>
+            
+            <button type="button" onclick="addRowLine()" class="bg-primary text-white hover:opacity-95 text-[12px] font-bold px-4 py-2 rounded flex items-center gap-1.5 shadow-sm">
+                <span class="material-symbols-outlined text-[16px]">add</span>
+                Tambah Baris
+            </button>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse" id="jurnalTable">
+                <thead>
+                    <tr class="bg-slate-100/60 uppercase text-[11px] text-[#505f76] font-bold border-b border-[#bfc7d2]/30">
+                        <th class="px-6 py-3.5">Pilih Rekening Akun</th>
+                        <th class="px-6 py-3.5 w-44 text-center">Debit / Kredit</th>
+                        <th class="px-6 py-3.5 w-64 text-right">Nominal Pengenal (Rp)</th>
+                        <th class="px-6 py-3.5 w-20 text-center"></th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-[13px]" id="jurnalLinesContainer">
+                    <!-- Default Initial Line 1 (Debit Line) -->
+                    <tr class="hover:bg-slate-50/20">
+                        <td class="px-6 py-3">
+                            <select name="kode_akun" required class="w-full rounded-md border-slate-300 text-[13px] focus:border-primary focus:ring-primary py-2 bg-white">
+                                <option value="" disabled selected>-- Pilih Akun --</option>
+                                <% accounts.forEach((acc) => { %>
+                                    <option value="<%= acc.kode_akun %>" <%= acc.kode_akun === '1101' ? 'selected' : '' %>><%= acc.kode_akun %> - <%= acc.nama_akun %></option>
+                                <% }) %>
+                            </select>
+                        </td>
+                        <td class="px-6 py-3">
+                            <select name="jenis_mutasi" required onchange="calculateBalanceTotals()" class="w-full rounded-md border-slate-300 text-[13px] focus:border-primary focus:ring-primary py-2 bg-white">
+                                <option value="Debit" selected>Debit</option>
+                                <option value="Kredit">Kredit</option>
+                            </select>
+                        </td>
+                        <td class="px-6 py-3">
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-[13px]">Rp</span>
+                                <input type="number" name="nominal" required min="1" step="any" oninput="calculateBalanceTotals()" placeholder="0" class="w-full text-right rounded-md border-slate-300 pl-9 pr-3 text-[13px] font-mono-data focus:border-primary focus:ring-primary">
+                            </div>
+                        </td>
+                        <td class="px-6 py-3 text-center">
+                            <button type="button" onclick="removeRowLine(this)" class="text-slate-300 hover:text-red-600 transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Default Initial Line 2 (Kredit Line) -->
+                    <tr class="hover:bg-slate-50/20">
+                        <td class="px-6 py-3">
+                            <select name="kode_akun" required class="w-full rounded-md border-slate-300 text-[13px] focus:border-primary focus:ring-primary py-2 bg-white">
+                                <option value="" disabled selected>-- Pilih Akun --</option>
+                                <% accounts.forEach((acc) => { %>
+                                    <option value="<%= acc.kode_akun %>" <%= acc.kode_akun === '4101' ? 'selected' : '' %>><%= acc.kode_akun %> - <%= acc.nama_akun %></option>
+                                <% }) %>
+                            </select>
+                        </td>
+                        <td class="px-6 py-3">
+                            <select name="jenis_mutasi" required onchange="calculateBalanceTotals()" class="w-full rounded-md border-slate-300 text-[13px] focus:border-primary focus:ring-primary py-2 bg-white">
+                                <option value="Debit">Debit</option>
+                                <option value="Kredit" selected>Kredit</option>
+                            </select>
+                        </td>
+                        <td class="px-6 py-3">
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-[13px]">Rp</span>
+                                <input type="number" name="nominal" required min="1" step="any" oninput="calculateBalanceTotals()" placeholder="0" class="w-full text-right rounded-md border-slate-300 pl-9 pr-3 text-[13px] font-mono-data focus:border-primary focus:ring-primary">
+                            </div>
+                        </td>
+                        <td class="px-6 py-3 text-center">
+                            <button type="button" onclick="removeRowLine(this)" class="text-slate-300 hover:text-red-600 transition-colors">
+                                <span class="material-symbols-outlined text-[18px]">delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Metric Balance Footer -->
+        <div class="p-6 bg-slate-50 border-t border-[#bfc7d2]/30 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex gap-8 items-center">
+                <div>
+                    <p class="text-[10px] text-secondary font-bold uppercase tracking-wider mb-1">Total Debit</p>
+                    <p class="text-[18px] font-black text-slate-800 font-mono-data" id="textTotalDebit">Rp 0</p>
+                </div>
+                <div class="h-8 w-[1px] bg-slate-300"></div>
+                <div>
+                    <p class="text-[10px] text-secondary font-bold uppercase tracking-wider mb-1">Total Kredit</p>
+                    <p class="text-[18px] font-black text-slate-800 font-mono-data" id="textTotalKredit">Rp 0</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <!-- Status balanced batch -->
+                <div id="balanceBadge" class="flex items-center gap-1.5 px-4 py-2 rounded-full border text-[11px] font-bold uppercase tracking-wider bg-orange-50 border-orange-200 text-orange-850">
+                    <span class="material-symbols-outlined text-[16px]">info</span>
+                    <span id="balanceText">Belum Seimbang</span>
+                </div>
+
+                <div class="flex gap-2">
+                    <a href="/dashboard" class="px-4 py-2.5 border border-slate-300 rounded-lg text-[13px] font-semibold hover:bg-white transition-colors bg-white/70">Batal</a>
+                    <button type="submit" id="btnSubmit" disabled class="px-6 py-2.5 rounded-lg text-[13px] font-bold text-white bg-slate-450 hover:bg-slate-500 cursor-not-allowed">Simpan Transaksi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Row 3: History & Explanatory Banners -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8 mt-8">
+    <div class="md:col-span-4 bg-blue-50/50 border border-blue-200 rounded-lg p-5 flex gap-4">
+        <div class="bg-blue-100 text-blue-800 p-2 rounded-lg h-fit">
+            <span class="material-symbols-outlined">info</span>
+        </div>
+        <div>
+            <h5 class="text-[14px] font-bold text-slate-900 mb-1">Informasi Penjurnalan</h5>
+            <p class="text-[12px] text-[#55647a] leading-relaxed">Sebelum menyimpan transaksi, pastikan saldo total Debit dan Kredit seimbang. Formula ini menjamin seluruh pembukuan tercatat secara kronologis di Jurnal Umum.</p>
+        </div>
+    </div>
+
+    <!-- Active lists to view / delete transactions directly -->
+    <div class="md:col-span-8 bg-white rounded-lg border border-[#bfc7d2]/60 shadow-sm p-6 max-h-72 overflow-y-auto">
+        <h4 class="font-bold text-[14px] text-slate-900 mb-4 flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-[18px]">history</span>
+            Daftar Transaksi Terakhir (Hapus Transaksi)
+        </h4>
+
+        <% if (transactions.length === 0) { %>
+            <p class="text-[12px] text-slate-500 italic text-center py-8">Belum ada transaksi di database.</p>
+        <% } else { %>
+            <div class="space-y-3">
+                <% transactions.forEach((tx) => { %>
+                    <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-200 text-[12px]">
+                        <div>
+                            <span class="font-mono-data text-slate-600 font-bold mr-2"><%= tx.tanggal %></span>
+                            <span class="font-medium text-slate-900"><%= tx.keterangan %></span>
+                            <span class="text-[10px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded ml-2">JU-00<%= tx.id_transaksi %></span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="font-bold text-primary font-mono-data">Rp <%= tx.total_debit.toLocaleString('id-ID') %></span>
+                            <a href="/transaksi/delete/<%= tx.id_transaksi %>" onclick="return confirm('Apakah Anda yakin ingin menghapus transaksi JU-00<%= tx.id_transaksi %>? Ini akan menghapus seluruh data jurnal mutasinya!')" class="text-red-600 hover:bg-red-50 p-1.5 rounded transition-colors" title="Hapus Transaksi">
+                                <span class="material-symbols-outlined text-[16px]">delete</span>
+                            </a>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Raw EJS Account Option Variables for JS Dynamic row additions -->
+<script id="accountOptionsTemplate" type="text/template">
+    <option value="" disabled selected>-- Pilih Akun --</option>
+    <% accounts.forEach((acc) => { %>
+        <option value="<%= acc.kode_akun %>"><%= acc.kode_akun %> - <%= acc.nama_akun %></option>
+    <% }) %>
+</script>
+
+<script>
+    // Automatically set default date to current date
+    window.addEventListener('DOMContentLoaded', () => {
+        const dateInput = document.getElementById('tx_tanggal');
+        const today = new Date().toISOString().substring(0, 10);
+        dateInput.value = today;
+        calculateBalanceTotals();
+    });
+
+    // Append new journal detail row dynamically
+    function addRowLine() {
+        const container = document.getElementById('jurnalLinesContainer');
+        const templateOptions = document.getElementById('accountOptionsTemplate').innerHTML;
+        
+        const newRow = document.createElement('tr');
+        newRow.className = "hover:bg-slate-50/20";
+        newRow.innerHTML = `
+            <td class="px-6 py-3">
+                <select name="kode_akun" required class="w-full rounded-md border-slate-300 text-[13px] focus:border-primary focus:ring-primary py-2 bg-white">
+                    ${templateOptions}
+                </select>
+            </td>
+            <td class="px-6 py-3">
+                <select name="jenis_mutasi" required onchange="calculateBalanceTotals()" class="w-full rounded-md border-slate-300 text-[13px] focus:border-primary focus:ring-primary py-2 bg-white">
+                    <option value="Debit">Debit</option>
+                    <option value="Kredit">Kredit</option>
+                </select>
+            </td>
+            <td class="px-6 py-3">
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-semibold text-[13px]">Rp</span>
+                    <input type="number" name="nominal" required min="1" step="any" oninput="calculateBalanceTotals()" placeholder="0" class="w-full text-right rounded-md border-slate-300 pl-9 pr-3 text-[13px] font-mono-data focus:border-primary focus:ring-primary">
+                </div>
+            </td>
+            <td class="px-6 py-3 text-center">
+                <button type="button" onclick="removeRowLine(this)" class="text-slate-300 hover:text-red-600 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                </button>
+            </td>
+        `;
+        
+        container.appendChild(newRow);
+        calculateBalanceTotals();
+    }
+
+    // Delete row line from custom list
+    function removeRowLine(button) {
+        const rowsCount = document.getElementById('jurnalLinesContainer').getElementsByTagName('tr').length;
+        if (rowsCount <= 2) {
+            alert('Masukkan minimal 2 baris jurnal (Debit & Kredit) untuk melakukan penyeimbangan jurnal!');
+            return;
+        }
+        button.closest('tr').remove();
+        calculateBalanceTotals();
+    }
+
+    // Recalculate Debit & Kredit summation totals in real-time
+    function calculateBalanceTotals() {
+        const container = document.getElementById('jurnalLinesContainer');
+        const rows = container.getElementsByTagName('tr');
+        
+        let totalDebit = 0;
+        let totalKredit = 0;
+
+        for (let row of rows) {
+            const selectMutation = row.querySelector('select[name="jenis_mutasi"]');
+            const inputNominal = row.querySelector('input[name="nominal"]');
+            
+            const mutation = selectMutation ? selectMutation.value : 'Debit';
+            const val = inputNominal ? parseFloat(inputNominal.value) : 0;
+            const amount = isNaN(val) ? 0 : val;
+
+            if (mutation === 'Debit') {
+                totalDebit += amount;
+            } else {
+                totalKredit += amount;
+            }
+        }
+
+        // DOM Updates
+        document.getElementById('textTotalDebit').textContent = 'Rp ' + totalDebit.toLocaleString('id-ID');
+        document.getElementById('textTotalKredit').textContent = 'Rp ' + totalKredit.toLocaleString('id-ID');
+
+        const badge = document.getElementById('balanceBadge');
+        const textStr = document.getElementById('balanceText');
+        const btn = document.getElementById('btnSubmit');
+
+        // Check for balance
+        if (totalDebit > 0 && totalKredit > 0 && Math.abs(totalDebit - totalKredit) < 0.01) {
+            // Balanced
+            badge.className = "flex items-center gap-1.5 px-4 py-2 rounded-full border text-[11px] font-bold uppercase tracking-wider bg-emerald-50 border-emerald-200 text-emerald-800";
+            textStr.innerHTML = `<span class="inline-block w-2 h-2 bg-emerald-500 rounded-full mr-1.5 animate-ping"></span>Seimbang (Balanced)`;
+            
+            btn.disabled = false;
+            btn.className = "px-6 py-2.5 rounded-lg text-[13px] font-bold text-white bg-primary hover:opacity-95 shadow transition-all cursor-pointer";
+        } else {
+            // Unbalanced
+            badge.className = "flex items-center gap-1.5 px-4 py-2 rounded-full border text-[11px] font-bold uppercase tracking-wider bg-orange-50 border-orange-200 text-orange-800";
+            textStr.textContent = "Belum Seimbang";
+            
+            btn.disabled = true;
+            btn.className = "px-6 py-2.5 rounded-lg text-[13px] font-bold text-white bg-slate-400 opacity-60 cursor-not-allowed";
+        }
+    }
+
+    // Final safety validation block on form submission
+    function validateFormSubmit(event) {
+        const container = document.getElementById('jurnalLinesContainer');
+        const selectAccounts = container.querySelectorAll('select[name="kode_akun"]');
+        const selectedValues = Array.from(selectAccounts).map(s => s.value);
+        
+        // Ensure no empty selections
+        if (selectedValues.includes('')) {
+            alert('Silakan pilih rekening akun untuk seluruh baris entri!');
+            event.preventDefault();
+            return false;
+        }
+
+        return true;
+    }
+</script>
+
+<%- include('../partials/footer') %>

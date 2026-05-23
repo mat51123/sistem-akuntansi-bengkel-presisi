@@ -1,0 +1,156 @@
+<%- include('partials/header') %>
+
+<!-- Header Page Header -->
+<div class="mb-8">
+    <h3 class="text-[26px] font-bold text-slate-950 tracking-tight">Ringkasan Sistem</h3>
+    <p class="text-[14px] text-[#505f76] mt-1">Selamat datang kembali, <strong>MAMAT MEKANIK RECING</strong> Berikut adalah laporan sekilas tentang status keuangan Bengkel Presisi Anda hari ini.</p>
+</div>
+
+<!-- Bento grid for quick financial statistics -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <!-- Card Total Aset -->
+    <div class="bg-white p-6 rounded-lg border border-[#bfc7d2]/60 shadow-sm relative overflow-hidden transition-all hover:translate-y-[-2px] hover:shadow-md">
+        <div class="absolute right-0 top-0 h-16 w-16 bg-[#006194]/5 rounded-bl-full flex items-center justify-center text-[#006194]">
+            <span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+        </div>
+        <p class="text-[12px] text-secondary font-bold uppercase tracking-wider">Total Aset</p>
+        <p class="text-[22px] font-bold text-[#006194] mt-2 font-mono-data">Rp <%= totalAset.toLocaleString('id-ID') %></p>
+        <span class="text-[11px] text-emerald-600 font-semibold mt-1 inline-flex items-center gap-1">
+            <span class="material-symbols-outlined text-[12px]">trending_up</span> Likuiditas Baik
+        </span>
+    </div>
+
+    <!-- Card Total Kewajiban -->
+    <div class="bg-white p-6 rounded-lg border border-[#bfc7d2]/60 shadow-sm relative overflow-hidden transition-all hover:translate-y-[-2px] hover:shadow-md">
+        <div class="absolute right-0 top-0 h-16 w-16 bg-red-100/30 rounded-bl-full flex items-center justify-center text-red-600">
+            <span class="material-symbols-outlined text-[24px]">credit_card_heart</span>
+        </div>
+        <p class="text-[12px] text-secondary font-bold uppercase tracking-wider">Total Kewajiban</p>
+        <p class="text-[22px] font-bold text-red-700 mt-2 font-mono-data">Rp <%= totalKewajiban.toLocaleString('id-ID') %></p>
+        <span class="text-[11px] text-[#505f76] font-semibold mt-1">
+            Liabilitas &amp; Utang Usaha
+        </span>
+    </div>
+
+    <!-- Card Laba Bersih -->
+    <div class="bg-white p-6 rounded-lg border border-[#bfc7d2]/60 shadow-sm relative overflow-hidden transition-all hover:translate-y-[-2px] hover:shadow-md">
+        <div class="absolute right-0 top-0 h-16 w-16 bg-emerald-100/30 rounded-bl-full flex items-center justify-center text-emerald-600">
+            <span class="material-symbols-outlined text-[24px]">payments</span>
+        </div>
+        <p class="text-[12px] text-secondary font-bold uppercase tracking-wider">Laba Bersih Des-Mei</p>
+        <p class="text-[22px] font-bold text-emerald-700 mt-2 font-mono-data">Rp <%= labaBersih.toLocaleString('id-ID') %></p>
+        <span class="text-[11px] text-emerald-600 font-semibold mt-1 inline-flex items-center gap-1">
+            <span class="material-symbols-outlined text-[12px]">check_circle</span> Pendapatan - Beban
+        </span>
+    </div>
+
+    <!-- Card Jumlah CoA -->
+    <div class="bg-white p-6 rounded-lg border border-[#bfc7d2]/60 shadow-sm relative overflow-hidden transition-all hover:translate-y-[-2px] hover:shadow-md">
+        <div class="absolute right-0 top-0 h-16 w-16 bg-indigo-50/50 rounded-bl-full flex items-center justify-center text-indigo-600">
+            <span class="material-symbols-outlined text-[24px]">analytics</span>
+        </div>
+        <p class="text-[12px] text-secondary font-bold uppercase tracking-wider">Daftar Rekening</p>
+        <p class="text-[22px] font-bold text-slate-800 mt-2 font-mono-data"><%= jumlahAkun %> Rekening</p>
+        <span class="text-[11px] text-slate-500 font-semibold mt-1">
+            Chart of Accounts Aktif
+        </span>
+    </div>
+</div>
+
+<!-- Grid for Main Columns -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+    
+    <!-- Left Column: Quick actions and dynamic stats info -->
+    <div class="md:col-span-8 flex flex-col gap-8">
+        
+        <!-- Recent transactions list card -->
+        <div class="bg-white rounded-lg border border-[#bfc7d2]/60 shadow-sm">
+            <div class="p-6 border-b border-[#bfc7d2]/30 flex justify-between items-center bg-slate-50/50">
+                <h4 class="font-bold text-[16px] text-slate-900">Transaksi Terbaru</h4>
+                <a href="/jurnal" class="text-[12px] text-primary hover:underline font-semibold flex items-center gap-1">
+                    Lihat Seluruh Jurnal <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                </a>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100/60 uppercase text-[11px] text-[#505f76] font-bold border-b border-[#bfc7d2]/30">
+                            <th class="px-6 py-3 w-32">Tanggal</th>
+                            <th class="px-6 py-3">Deskripsi Transaksi</th>
+                            <th class="px-6 py-3 text-right">Nilai Jurnal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-[#bfc7d2]/20 text-[13px]">
+                        <% if (recentTransactions.length === 0) { %>
+                            <tr>
+                                <td colspan="3" class="px-6 py-12 text-center text-slate-500 italic">Belum ada transaksi diinput. Silakan buat transaksi baru!</td>
+                            </tr>
+                        <% } else { %>
+                            <% recentTransactions.forEach((tx) => { %>
+                                <tr class="hover:bg-slate-50/60 transition-colors">
+                                    <td class="px-6 py-4 font-mono-data text-slate-600 font-semibold text-center"><%= tx.tanggal %></td>
+                                    <td class="px-6 py-4 font-normal text-slate-900 group-hover:text-primary">
+                                        <div class="font-semibold"><%= tx.keterangan %></div>
+                                        <div class="text-[11px] text-slate-400">Ref: JU-00<%= tx.id_transaksi %></div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right font-bold font-mono-data text-primary">
+                                        Rp <%= tx.total_nominal ? tx.total_nominal.toLocaleString('id-ID') : '0' %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Right Column: Quick shortcuts / instructions -->
+    <div class="md:col-span-4 space-y-6">
+        
+        <!-- Card shortcut navigations -->
+        <div class="bg-gradient-to-br from-primary to-[#004b73] text-white p-6 rounded-lg shadow shadow-primary/20">
+            <h4 class="font-bold text-[16px] mb-2 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[20px]">assignment_turned_in</span>
+                Fitur Sistem Otomatis
+            </h4>
+            <p class="text-[13px] text-blue-100 leading-relaxed mb-6">Aplikasi ini membagi pemrosesan data akuntansi menjadi 3 kelompok otomatis sesuai standar Sistem Informasi Akuntansi (SIA).</p>
+            
+            <div class="space-y-3 text-[12px]">
+                <div class="flex items-start gap-2.5">
+                    <span class="bg-white/20 text-white rounded p-0.5"><span class="material-symbols-outlined text-[16px]">point_of_sale</span></span>
+                    <div>
+                        <span class="font-bold text-white block">Satu Kali Input Jurnal</span>
+                        <span class="text-blue-100/90 text-[11px]">Cukup entri detail transaksi, database trigger otomatis mengisi tabel jurnal_umum.</span>
+                    </div>
+                </div>
+                <div class="flex items-start gap-2.5 mt-2">
+                    <span class="bg-white/20 text-white rounded p-0.5"><span class="material-symbols-outlined text-[16px]">calculate</span></span>
+                    <div>
+                        <span class="font-bold text-white block">Laporan Neraca Seimbang</span>
+                        <span class="text-blue-100/90 text-[11px]">Sistem menghitung laba bersih &amp; modal akhir secara langsung untuk menyeimbangkan Neraca secara presisi.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Help Card -->
+        <div class="bg-white p-6 rounded-lg border border-[#bfc7d2]/60 shadow-sm">
+            <h4 class="font-bold text-[14px] text-slate-900 mb-3 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[18px]">info</span>
+                Panduan Uji UAS / Demo
+            </h4>
+            <ol class="list-decimal list-inside text-[12px] text-[#505f76] space-y-2 leading-relaxed">
+                <li>Buka menu <span class="font-semibold text-slate-900">Daftar Akun</span> untuk melihat Chart of Accounts (COA) / tambah kode baru.</li>
+                <li>Klik <span class="font-semibold text-slate-900">Input Transaksi</span> dan masukkan pengeluaran / pemasukan (Pastikan Debit = Kredit).</li>
+                <li>Lihat pencatatan terjurnal otomatis di <span class="font-semibold text-slate-900">Jurnal Umum</span>.</li>
+                <li>Download atau cetak laporan otomatis di tab <span class="font-semibold text-slate-900">Laporan Keuangan</span>.</li>
+            </ol>
+        </div>
+
+    </div>
+</div>
+
+<%- include('partials/footer') %>

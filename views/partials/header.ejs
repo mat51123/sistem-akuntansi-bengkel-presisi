@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html class="light animate-fade-in" lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <!-- Tailwind CSS (via CDN with Forms Plugin) -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <!-- Fonts: Inter & JetBrains Mono for perfect readability -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .font-mono-data {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+    </style>
+    <script>
+        // Custom Tailwind Config Integration
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#006194',
+                        secondary: '#505f76',
+                        background: '#f7f9fb',
+                        surface: '#ffffff',
+                        'hover-blue': '#f0f7fc'
+                    },
+                    borderRadius: {
+                        'DEFAULT': '0.5rem',
+                        'lg': '1rem'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#f7f9fb] text-[#191c1e] min-h-screen flex">
+
+<!-- Left Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-screen w-[280px] bg-white border-r border-[#bfc7d2] flex flex-col z-50 shadow-sm">
+    <!-- Brand / Title header -->
+    <div class="p-6 border-b border-[#bfc7d2]/40 bg-slate-50/50">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-[32px] text-primary" style="font-variation-settings: 'FILL' 1;">build_circle</span>
+            <div>
+                <h1 class="font-bold text-[18px] text-primary tracking-tight leading-none">BENGKEL MAMAT RECING</h1>
+                <p class="text-[11px] text-secondary font-medium tracking-wide uppercase mt-1">Sistem Keuangan UAS</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation links -->
+    <nav class="flex-grow px-3 mt-6 space-y-1">
+        <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-lg text-[14px] font-medium transition-all group <%= activePage === 'dashboard' ? 'text-primary bg-[#006194]/10 border-l-4 border-primary font-bold' : 'text-[#3f4850] hover:bg-slate-100 hover:text-slate-900' %>">
+            <span class="material-symbols-outlined text-[20px] <%= activePage === 'dashboard' ? 'text-primary' : 'text-secondary' %>">dashboard</span>
+            <span>Dashboard Ringkasan</span>
+        </a>
+
+        <a href="/akun" class="flex items-center gap-3 px-4 py-3 rounded-lg text-[14px] font-medium transition-all group <%= activePage === 'akun' ? 'text-primary bg-[#006194]/10 border-l-4 border-primary font-bold' : 'text-[#3f4850] hover:bg-slate-100 hover:text-slate-900' %>">
+            <span class="material-symbols-outlined text-[20px] <%= activePage === 'akun' ? 'text-primary' : 'text-secondary' %>">account_balance</span>
+            <span>Daftar Akun (COA)</span>
+        </a>
+
+        <a href="/transaksi" class="flex items-center gap-3 px-4 py-3 rounded-lg text-[14px] font-medium transition-all group <%= activePage === 'transaksi' ? 'text-primary bg-[#006194]/10 border-l-4 border-primary font-bold' : 'text-[#3f4850] hover:bg-slate-100 hover:text-slate-900' %>">
+            <span class="material-symbols-outlined text-[20px] <%= activePage === 'transaksi' ? 'text-primary' : 'text-secondary' %>">receipt_long</span>
+            <span>Input Transaksi</span>
+        </a>
+
+        <a href="/jurnal" class="flex items-center gap-3 px-4 py-3 rounded-lg text-[14px] font-medium transition-all group <%= activePage === 'jurnal' ? 'text-primary bg-[#006194]/10 border-l-4 border-primary font-bold' : 'text-[#3f4850] hover:bg-slate-100 hover:text-slate-900' %>">
+            <span class="material-symbols-outlined text-[20px] <%= activePage === 'jurnal' ? 'text-primary' : 'text-secondary' %>">menu_book</span>
+            <span>Jurnal Umum</span>
+        </a>
+
+        <a href="/laporan" class="flex items-center gap-3 px-4 py-3 rounded-lg text-[14px] font-medium transition-all group <%= activePage === 'laporan' ? 'text-primary bg-[#006194]/10 border-l-4 border-primary font-bold' : 'text-[#3f4850] hover:bg-slate-100 hover:text-slate-900' %>">
+            <span class="material-symbols-outlined text-[20px] <%= activePage === 'laporan' ? 'text-primary' : 'text-secondary' %>">assessment</span>
+            <span>Laporan Keuangan</span>
+        </a>
+
+        <a href="/logout" class="flex items-center gap-3 px-4 py-3 rounded-lg text-[14px] font-medium transition-all text-red-650 hover:bg-red-50 hover:text-red-800 group">
+            <span class="material-symbols-outlined text-[20px] text-red-500 group-hover:text-red-700">logout</span>
+            <span>Keluar (Logout)</span>
+        </a>
+    </nav>
+
+    <!-- Bottom sidebar section -->
+    <div class="p-4 border-t border-[#bfc7d2]/40 bg-slate-50/50">
+        <a href="/transaksi" class="w-full bg-primary text-white py-3 px-4 rounded-lg font-bold text-[13px] hover:opacity-95 transition-opacity flex items-center justify-center gap-2 shadow-sm">
+            <span class="material-symbols-outlined text-[18px]">add</span>
+            Transaksi Baru
+        </a>
+        <div class="mt-4 flex items-center justify-between text-[11px] text-[#505f76] px-1 font-mono-data">
+            <span>Server: NodeJS + Lite</span>
+            <span class="inline-block w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow"></span>
+        </div>
+    </div>
+</aside>
+
+<!-- Right Side Shell Container -->
+<div class="flex-1 ml-[280px] flex flex-col min-h-screen">
+    
+    <!-- Top Global App Bar Header -->
+    <header class="sticky top-0 z-40 bg-white border-b border-[#bfc7d2]/60 h-16 px-8 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-3">
+            <h2 class="text-[15px] font-semibold text-[#191c1e]">Sistem Akuntansi Bengkel MAMAT RECING</h2>
+            <span class="bg-primary/10 text-primary text-[11px] px-2.5 py-0.5 rounded-full font-bold"></span>
+        </div>
+        
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 px-3 py-1 rounded-full text-[12px] font-medium text-[#505f76]">
+                <span class="material-symbols-outlined text-[16px]">schedule</span>
+                <span id="liveClock">Loading...</span>
+            </div>
+            
+            <div class="h-8 w-[1px] bg-[#bfc7d2]/50"></div>
+            
+        </div>
+    </header>
+
+    <!-- Page Content Container Wrapper -->
+    <main class="flex-grow p-8 max-w-[1200px] w-full mx-auto">

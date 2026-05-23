@@ -1,0 +1,274 @@
+<%- include('../partials/header') %>
+
+<!-- Success & Error Alerts -->
+<% if (error) { %>
+    <div class="mb-6 p-4 bg-red-100 text-red-800 border-l-4 border-red-500 rounded-r-lg text-[13px] flex items-center justify-between shadow-sm">
+        <span class="font-medium flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">error</span>
+            <%= error %>
+        </span>
+        <button onclick="this.parentElement.remove()" class="text-red-800 hover:opacity-80 font-bold">&times;</button>
+    </div>
+<% } %>
+
+<% if (success) { %>
+    <div class="mb-6 p-4 bg-emerald-100 text-emerald-800 border-l-4 border-emerald-500 rounded-r-lg text-[13px] flex items-center justify-between shadow-sm">
+        <span class="font-medium flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">check_circle</span>
+            <%= success %>
+        </span>
+        <button onclick="this.parentElement.remove()" class="text-emerald-800 hover:opacity-80 font-bold">&times;</button>
+    </div>
+<% } %>
+
+<!-- Header Page Header -->
+<div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+        <h3 class="text-[26px] font-bold text-slate-950 tracking-tight">Daftar Akun Rekening (CoA)</h3>
+        <p class="text-[14px] text-[#505f76] mt-1">Kelola Chart of Accounts (COA) / Kode Perkiraan untuk memetakan penempatan transaksi keuangan bengkel Anda.</p>
+    </div>
+    
+    <button onclick="openAddModal()" class="bg-primary text-white py-2.5 px-5 rounded-lg font-bold text-[13px] hover:opacity-95 transition-all flex items-center gap-2 shadow-sm">
+        <span class="material-symbols-outlined text-[18px]">add_circle</span>
+        Tambah Kode Akun
+    </button>
+</div>
+
+<!-- Bento Metrics showing totals of key categories -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white p-5 rounded-lg border border-[#bfc7d2]/60 shadow-sm flex items-center gap-4">
+        <div class="h-12 w-12 bg-[#006194]/10 rounded-lg flex items-center justify-center text-[#006194]">
+            <span class="material-symbols-outlined text-[24px]">account_balance_wallet</span>
+        </div>
+        <div>
+            <p class="text-[11px] text-secondary font-bold uppercase tracking-wider">Nilai Seluruh Aset</p>
+            <p class="text-[18px] font-bold text-[#006194] leading-tight font-mono-data">Rp <%= totalAset.toLocaleString('id-ID') %></p>
+        </div>
+    </div>
+
+    <div class="bg-white p-5 rounded-lg border border-[#bfc7d2]/60 shadow-sm flex items-center gap-4">
+        <div class="h-12 w-12 bg-red-100 text-red-600 rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-[24px]">credit_card_heart</span>
+        </div>
+        <div>
+            <p class="text-[11px] text-secondary font-bold uppercase tracking-wider">Nilai Kewajiban</p>
+            <p class="text-[18px] font-bold text-red-700 leading-tight font-mono-data">Rp <%= totalKewajiban.toLocaleString('id-ID') %></p>
+        </div>
+    </div>
+
+    <div class="bg-white p-5 rounded-lg border border-[#bfc7d2]/60 shadow-sm flex items-center gap-4">
+        <div class="h-12 w-12 bg-slate-100 text-slate-700 rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-[24px]">analytics</span>
+        </div>
+        <div>
+            <p class="text-[11px] text-secondary font-bold uppercase tracking-wider">Jumlah Rekening</p>
+            <p class="text-[18px] font-bold text-slate-800 leading-tight"><%= jumlahAkun %> Akun Terdaftar</p>
+        </div>
+    </div>
+</div>
+
+<!-- COA Table Grid Card -->
+<div class="bg-white rounded-lg border border-[#bfc7d2]/60 shadow-sm overflow-hidden">
+    <div class="p-5 border-b border-[#bfc7d2]/30 bg-slate-50/50 flex justify-between items-center">
+        <h4 class="font-bold text-[15px] text-slate-900">Buku Besar Rekening</h4>
+        <span class="text-[11px] bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full font-bold">Total <%= accounts.length %> COA</span>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-100/60 uppercase text-[11px] text-[#505f76] font-bold border-b border-[#bfc7d2]/30">
+                    <th class="px-6 py-4 w-32 text-center">Kode Akun</th>
+                    <th class="px-6 py-4">Nama Akun</th>
+                    <th class="px-6 py-4">Kelompok Rekening</th>
+                    <th class="px-6 py-4 w-44 text-center">Saldo Normal</th>
+                    <th class="px-6 py-4 w-32 text-right">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-[#bfc7d2]/20 text-[13px]">
+                <% if (accounts.length === 0) { %>
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center text-slate-500 italic">Belum ada akun di database.</td>
+                    </tr>
+                <% } else { %>
+                    <% accounts.forEach((acc) => { %>
+                        <tr class="hover:bg-slate-50/40 transition-colors">
+                            <td class="px-6 py-4 font-mono-data text-primary font-bold text-center border-r border-slate-100">
+                                <%= acc.kode_akun %>
+                            </td>
+                            <td class="px-6 py-4 font-semibold text-slate-900">
+                                <%= acc.nama_akun %>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider
+                                    <%= acc.kelompok.startsWith('Aset') ? 'bg-blue-50 text-blue-800 border border-blue-200' : '' %>
+                                    <%= acc.kelompok === 'Kewajiban' ? 'bg-orange-50 text-orange-800 border border-orange-200' : '' %>
+                                    <%= acc.kelompok === 'Ekuitas' ? 'bg-purple-50 text-purple-800 border border-purple-200' : '' %>
+                                    <%= acc.kelompok === 'Pendapatan' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : '' %>
+                                    <%= acc.kelompok === 'Beban' ? 'bg-rose-50 text-rose-800 border border-rose-200' : '' %>">
+                                    <%= acc.kelompok %>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-center text-slate-700 font-medium">
+                                <%= acc.saldo_normal %>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex justify-end gap-3">
+                                    <button onclick="openEditModal('<%= acc.kode_akun %>', '<%= acc.nama_akun %>', '<%= acc.kelompok %>', '<%= acc.saldo_normal %>')" class="text-primary hover:bg-[#006194]/10 p-1 rounded transition-colors" title="Edit Akun">
+                                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                                    </button>
+                                    <a href="/akun/delete/<%= acc.kode_akun %>" onclick="return confirm('Apakah Anda yakin ingin menghapus akun <%= acc.kode_akun %> - <%= acc.nama_akun %>?')" class="text-red-600 hover:bg-red-50 p-1 rounded transition-colors" title="Hapus Akun">
+                                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Dialog Modal: Add Account (Tambah Akun) -->
+<div id="addModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-950/40 backdrop-blur-sm p-4">
+    <div class="bg-white w-full max-w-md rounded-lg shadow-xl border border-[#bfc7d2]/60 overflow-hidden animate-in fade-in zoom-in duration-150">
+        <div class="px-6 py-4 border-b border-[#bfc7d2]/30 bg-slate-50 flex justify-between items-center">
+            <h4 class="font-bold text-[15px] text-slate-900 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">add_box</span>
+                Tambah Akun Rekening Baru
+            </h4>
+            <button onclick="closeAddModal()" class="text-slate-600 hover:text-red-600 font-bold text-[20px]">&times;</button>
+        </div>
+        <form action="/akun" method="POST" class="p-6 space-y-4">
+            <div>
+                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Kode Akun</label>
+                <input type="text" name="kode_akun" required placeholder="Contoh: 1104" class="w-full rounded-md border-slate-300 text-[13px] focus:border-primary focus:ring-primary">
+                <span class="text-[10px] text-[#55647a] block mt-1">Gunakan digit pertama: 1=Aset, 2=Kewajiban, 3=Modal, 4=Pendapatan, 5=Beban</span>
+            </div>
+            <div>
+                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Nama Akun</label>
+                <input type="text" name="nama_akun" required placeholder="Contoh: Perlengkapan Kantor" class="w-full rounded-md border-slate-300 text-[13px] focus:border-primary focus:ring-primary">
+            </div>
+            <div>
+                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Kelompok Akun</label>
+                <select name="kelompok" class="w-full rounded-md border-slate-300 text-[13px] focus:border-primary focus:ring-primary bg-white">
+                    <option value="Aset Lancar">Aset Lancar</option>
+                    <option value="Aset Tetap">Aset Tetap</option>
+                    <option value="Kewajiban">Kewajiban (Liabilitas/Utang)</option>
+                    <option value="Ekuitas">Ekuitas (Modal &amp; Prive)</option>
+                    <option value="Pendapatan">Pendapatan (Jasa &amp; Penjualan)</option>
+                    <option value="Beban">Beban Operasional &amp; Adm</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Saldo Normal</label>
+                <div class="flex gap-6 mt-1">
+                    <label class="flex items-center gap-2 text-[13px] font-medium text-slate-800 cursor-pointer">
+                        <input type="radio" name="saldo_normal" value="Debit" checked class="text-primary focus:ring-primary">
+                        <span>Debit</span>
+                    </label>
+                    <label class="flex items-center gap-2 text-[13px] font-medium text-slate-800 cursor-pointer">
+                        <input type="radio" name="saldo_normal" value="Kredit" class="text-primary focus:ring-primary">
+                        <span>Kredit</span>
+                    </label>
+                </div>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex gap-3">
+                <button type="button" onclick="closeAddModal()" class="flex-1 border border-slate-300 rounded px-4 py-2 text-[13px] font-semibold hover:bg-slate-50 transition-colors">Batal</button>
+                <button type="submit" class="flex-1 bg-primary text-white rounded px-4 py-2 text-[13px] font-bold hover:opacity-95 transition-opacity">Simpan Akun</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Dialog Modal: Edit Account (Ubah Akun) -->
+<div id="editModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-950/40 backdrop-blur-sm p-4">
+    <div class="bg-white w-full max-w-md rounded-lg shadow-xl border border-[#bfc7d2]/60 overflow-hidden animate-in fade-in zoom-in duration-150">
+        <div class="px-6 py-4 border-b border-[#bfc7d2]/30 bg-slate-50 flex justify-between items-center">
+            <h4 class="font-bold text-[15px] text-slate-900 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">edit_note</span>
+                Ubah Kode Perkiraan
+            </h4>
+            <button onclick="closeEditModal()" class="text-slate-600 hover:text-red-600 font-bold text-[20px]">&times;</button>
+        </div>
+        <form id="editForm" action="" method="POST" class="p-6 space-y-4">
+            <div>
+                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Kode Akun (Tidak Dapat Diubah)</label>
+                <input type="text" id="edit_kode_akun" disabled class="w-full rounded-md border-slate-200 bg-slate-100 text-[13px] font-bold text-slate-600">
+            </div>
+            <div>
+                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Nama Akun</label>
+                <input type="text" id="edit_nama_akun" name="nama_akun" required class="w-full rounded-md border-slate-300 text-[13px] focus:border-primary focus:ring-primary">
+            </div>
+            <div>
+                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Kelompok Akun</label>
+                <select id="edit_kelompok" name="kelompok" class="w-full rounded-md border-slate-300 text-[13px] focus:border-primary focus:ring-primary bg-white">
+                    <option value="Aset Lancar">Aset Lancar</option>
+                    <option value="Aset Tetap">Aset Tetap</option>
+                    <option value="Kewajiban">Kewajiban</option>
+                    <option value="Ekuitas">Ekuitas</option>
+                    <option value="Pendapatan">Pendapatan</option>
+                    <option value="Beban">Beban</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[12px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Saldo Normal</label>
+                <div class="flex gap-6 mt-1">
+                    <label class="flex items-center gap-2 text-[13px] font-medium text-slate-800 cursor-pointer">
+                        <input type="radio" id="edit_saldo_debit" name="saldo_normal" value="Debit" class="text-primary focus:ring-primary">
+                        <span>Debit</span>
+                    </label>
+                    <label class="flex items-center gap-2 text-[13px] font-medium text-slate-800 cursor-pointer">
+                        <input type="radio" id="edit_saldo_kredit" name="saldo_normal" value="Kredit" class="text-primary focus:ring-primary">
+                        <span>Kredit</span>
+                    </label>
+                </div>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex gap-3">
+                <button type="button" onclick="closeEditModal()" class="flex-1 border border-slate-300 rounded px-4 py-2 text-[13px] font-semibold hover:bg-slate-50 transition-colors">Batal</button>
+                <button type="submit" class="flex-1 bg-primary text-white rounded px-4 py-2 text-[13px] font-bold hover:opacity-95 transition-opacity">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Toggle Modals Logic
+    function openAddModal() {
+        const modal = document.getElementById('addModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+    function closeAddModal() {
+        const modal = document.getElementById('addModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function openEditModal(code, name, group, normal) {
+        document.getElementById('edit_kode_akun').value = code;
+        document.getElementById('edit_nama_akun').value = name;
+        document.getElementById('edit_kelompok').value = group;
+        
+        if (normal === 'Debit') {
+            document.getElementById('edit_saldo_debit').checked = true;
+        } else {
+            document.getElementById('edit_saldo_kredit').checked = true;
+        }
+
+        // Set form action destination
+        document.getElementById('editForm').action = `/akun/edit/${code}`;
+
+        const modal = document.getElementById('editModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+    function closeEditModal() {
+        const modal = document.getElementById('editModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+</script>
+
+<%- include('../partials/footer') %>
