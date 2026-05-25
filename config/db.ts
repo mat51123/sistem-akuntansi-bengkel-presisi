@@ -94,6 +94,8 @@ class MySQLDatabase implements Database {
 export async function getDB(): Promise<Database> {
   if (dbInstance) return dbInstance;
 
+  let lastError: Error | null = null;
+
   // If DB_HOST is defined, attempt to connect to MySQL
   if (process.env.DB_HOST) {
     try {
@@ -104,15 +106,17 @@ export async function getDB(): Promise<Database> {
       console.log('Successfully connected to MySQL database.');
       // Auto-initialize MySQL tables if they don't exist
       await initMySQL(dbInstance);
-    } catch (error) {
-      console.error('Failed to connect to MySQL database, falling back to SQLite:', error);
+    } catch (error: any) {
+      console.error('Failed to connect to MySQL database:', error);
+      lastError = error;
       dbInstance = null;
     }
   }
 
   if (!dbInstance) {
     if (process.env.VERCEL === '1') {
-      throw new Error('DATABASE CONNECTION ERROR: Database MySQL gagal terhubung pada lingkungan Vercel. Harap periksa apakah Environment Variables Anda sudah benar dan lengkap.');
+      const technicalDetails = lastError ? ` (Detail: ${lastError.message})` : ' (Detail: DB_HOST tidak dikonfigurasi)';
+      throw new Error(`DATABASE CONNECTION ERROR: Database MySQL gagal terhubung pada lingkungan Vercel.${technicalDetails}. Harap periksa apakah Environment Variables Anda sudah benar dan lengkap.`);
     }
     console.log('Initializing local SQLite database (for sandbox preview)...');
     const sqlite3 = await import('sqlite3');

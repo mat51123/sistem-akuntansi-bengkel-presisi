@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html class="light" lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <!-- Tailwind CSS via CDN with Forms plugin -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .error-bg {
+            background: radial-gradient(circle at 10% 20%, rgb(180, 30, 30) 0%, rgb(45, 10, 10) 90.1%);
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    borderRadius: {
+                        'DEFAULT': '0.5rem',
+                        'lg': '1rem'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="error-bg min-h-screen flex items-center justify-center p-4">
+    <!-- Glow spheres -->
+    <div class="absolute w-[300px] h-[300px] bg-red-500/10 rounded-full blur-[100px] top-10 left-10 pointer-events-none"></div>
+    <div class="absolute w-[400px] h-[400px] bg-orange-600/10 rounded-full blur-[120px] bottom-10 right-10 pointer-events-none"></div>
+
+    <div class="w-full max-w-2xl bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-2xl shadow-2xl relative z-10 my-8">
+        <!-- Logo and header -->
+        <div class="text-center mb-6">
+            <div class="inline-flex items-center justify-center p-4 bg-red-500/20 border border-red-500/30 rounded-2xl text-red-300 mb-4 shadow-inner">
+                <span class="material-symbols-outlined text-[40px]" style="font-variation-settings: 'FILL' 1;">database_off</span>
+            </div>
+            <h2 class="text-[22px] font-extrabold text-white tracking-tight">Koneksi Database Gagal</h2>
+            <p class="text-[12px] text-red-200/70 mt-1 uppercase tracking-widest font-semibold">Sistem Akuntansi Bengkel Presisi</p>
+        </div>
+
+        <!-- Technical Error Panel -->
+        <div class="mb-8 bg-black/30 border border-white/10 rounded-xl p-4 overflow-hidden">
+            <div class="flex items-center justify-between border-b border-white/10 pb-2 mb-3">
+                <span class="text-[11px] font-bold text-red-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[14px]">error</span> Detail Kesalahan (MySQL Error)
+                </span>
+                <span class="text-[10px] text-white/40 font-mono">STATUS: 500</span>
+            </div>
+            <p class="text-[13px] text-red-200 font-mono whitespace-pre-wrap break-all leading-relaxed"><%= error %></p>
+        </div>
+
+        <!-- Troubleshooting Steps -->
+        <div class="space-y-4">
+            <h3 class="text-[14px] font-bold text-white uppercase tracking-wider mb-2 flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px] text-yellow-400">help</span> Panduan Solusi Mandiri:
+            </h3>
+
+            <!-- Step 1 -->
+            <div class="flex gap-4 bg-white/5 border border-white/10 p-4 rounded-xl">
+                <div class="w-8 h-8 rounded-lg bg-yellow-400/20 text-yellow-300 flex items-center justify-center font-bold text-[14px] shrink-0">1</div>
+                <div>
+                    <h4 class="text-[14px] font-bold text-white">Periksa Status Layanan Aiven Anda</h4>
+                    <p class="text-[12px] text-white/70 mt-1">
+                        Database MySQL gratis dari **Aiven.io** otomatis di-pause jika tidak aktif selama beberapa hari. 
+                        Buka akun Anda di <a href="https://aiven.io" target="_blank" class="text-sky-300 hover:underline">Aiven Console</a> dan pastikan status service Anda **RUNNING** (berwarna hijau). Jika statusnya *Paused*, klik tombol **Resume/Start** untuk mengaktifkannya kembali.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="flex gap-4 bg-white/5 border border-white/10 p-4 rounded-xl">
+                <div class="w-8 h-8 rounded-lg bg-yellow-400/20 text-yellow-300 flex items-center justify-center font-bold text-[14px] shrink-0">2</div>
+                <div>
+                    <h4 class="text-[14px] font-bold text-white">Verifikasi Environment Variables di Vercel</h4>
+                    <p class="text-[12px] text-white/70 mt-1">
+                        Masuk ke dasbor **Vercel -> Project Settings -> Environment Variables**, dan pastikan kelima variabel di bawah ini sudah ditambahkan dengan benar (tanpa tanda kutip):
+                    </p>
+                    <div class="mt-3 overflow-x-auto">
+                        <table class="w-full text-left text-[11px] font-mono text-white/80 border-collapse border border-white/10">
+                            <thead>
+                                <tr class="bg-white/10">
+                                    <th class="p-1.5 border border-white/10">Key</th>
+                                    <th class="p-1.5 border border-white/10">Nilai Saat Ini</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="p-1.5 border border-white/10 font-bold text-sky-300">DB_HOST</td>
+                                    <td class="p-1.5 border border-white/10 break-all"><%= host %></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-1.5 border border-white/10 font-bold text-sky-300">DB_USER</td>
+                                    <td class="p-1.5 border border-white/10"><%= user %></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-1.5 border border-white/10 font-bold text-sky-300">DB_PORT</td>
+                                    <td class="p-1.5 border border-white/10"><%= port %></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-1.5 border border-white/10 font-bold text-sky-300">DB_NAME</td>
+                                    <td class="p-1.5 border border-white/10"><%= database %></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-1.5 border border-white/10 font-bold text-sky-300">DB_PASSWORD</td>
+                                    <td class="p-1.5 border border-white/10 text-white/40">•••••••• (Disembunyikan)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="flex gap-4 bg-white/5 border border-white/10 p-4 rounded-xl">
+                <div class="w-8 h-8 rounded-lg bg-yellow-400/20 text-yellow-300 flex items-center justify-center font-bold text-[14px] shrink-0">3</div>
+                <div>
+                    <h4 class="text-[14px] font-bold text-white">Lakukan "Redeploy" di Vercel</h4>
+                    <p class="text-[12px] text-white/70 mt-1">
+                        Jika Anda melakukan perubahan Environment Variables, perubahan tersebut **hanya aktif setelah deployment baru**.
+                        Buka tab **Deployments** di Vercel, klik tombol **tiga titik (`...`)** di sebelah kanan deployment terbaru Anda, lalu klik **Redeploy**.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reload Button -->
+        <div class="mt-8 text-center">
+            <button onclick="window.location.reload()" 
+                class="inline-flex items-center gap-2 bg-white text-red-900 font-bold text-[13px] px-6 py-3 rounded-xl shadow-lg hover:bg-slate-100 hover:scale-[1.01] transition-all">
+                <span class="material-symbols-outlined text-[18px]">refresh</span> Hubungkan Ulang Sekarang
+            </button>
+        </div>
+    </div>
+</body>
+</html>
