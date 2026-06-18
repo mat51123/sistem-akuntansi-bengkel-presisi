@@ -241,15 +241,12 @@ async function initSQLite(db: Database) {
       { code: '1102', name: 'Piutang Usaha', group: 'Aset Lancar', normal: 'Debit' },
       { code: '1103', name: 'Perlengkapan Bengkel', group: 'Aset Lancar', normal: 'Debit' },
       { code: '1201', name: 'Peralatan Bengkel', group: 'Aset Tetap', normal: 'Debit' },
-      { code: '1202', name: 'Akumulasi Penyusutan Peralatan', group: 'Aset Tetap', normal: 'Kredit' },
       { code: '2101', name: 'Utang Usaha', group: 'Kewajiban', normal: 'Kredit' },
       { code: '3101', name: 'Modal Pemilik', group: 'Ekuitas', normal: 'Kredit' },
       { code: '3102', name: 'Prive Pemilik', group: 'Ekuitas', normal: 'Debit' },
       { code: '4101', name: 'Pendapatan Jasa Servis', group: 'Pendapatan', normal: 'Kredit' },
-      { code: '4102', name: 'Pendapatan Penjualan Sparepart', group: 'Pendapatan', normal: 'Kredit' },
       { code: '5101', name: 'Beban Gaji Karyawan', group: 'Beban', normal: 'Debit' },
       { code: '5102', name: 'Beban Listrik & Air', group: 'Beban', normal: 'Debit' },
-      { code: '5103', name: 'Beban Perlengkapan', group: 'Beban', normal: 'Debit' },
     ];
 
     for (const coa of coaList) {

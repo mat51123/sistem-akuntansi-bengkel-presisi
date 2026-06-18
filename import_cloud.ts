@@ -73,6 +73,12 @@ const queries = [
     END IF;
   END;`,
 
+  // Cleanup old records to ensure only the requested accounts/data exist
+  `DELETE FROM jurnal_umum;`,
+  `DELETE FROM transaksi_detail;`,
+  `DELETE FROM transaksi;`,
+  `DELETE FROM akun;`,
+
   // 8. Seed Default Admin User
   `INSERT IGNORE INTO pengguna (username, password, nama_lengkap) VALUES ('admin', 'admin123', 'Budi Mekanik');`,
 
@@ -82,15 +88,12 @@ const queries = [
   ('1102', 'Piutang Usaha', 'Aset Lancar', 'Debit'),
   ('1103', 'Perlengkapan Bengkel', 'Aset Lancar', 'Debit'),
   ('1201', 'Peralatan Bengkel', 'Aset Tetap', 'Debit'),
-  ('1202', 'Akumulasi Penyusutan Peralatan', 'Aset Tetap', 'Kredit'),
   ('2101', 'Utang Usaha', 'Kewajiban', 'Kredit'),
   ('3101', 'Modal Pemilik', 'Ekuitas', 'Kredit'),
   ('3102', 'Prive Pemilik', 'Ekuitas', 'Debit'),
   ('4101', 'Pendapatan Jasa Servis', 'Pendapatan', 'Kredit'),
-  ('4102', 'Pendapatan Penjualan Sparepart', 'Pendapatan', 'Kredit'),
   ('5101', 'Beban Gaji Karyawan', 'Beban', 'Debit'),
-  ('5102', 'Beban Listrik & Air', 'Beban', 'Debit'),
-  ('5103', 'Beban Perlengkapan', 'Beban', 'Debit');`,
+  ('5102', 'Beban Listrik & Air', 'Beban', 'Debit');`,
 
   // 10. Seed Default Transactions
   `INSERT IGNORE INTO transaksi (id_transaksi, tanggal, keterangan) VALUES
