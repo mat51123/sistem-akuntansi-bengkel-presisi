@@ -22,8 +22,9 @@ export async function getLaporan(req: Request, res: Response) {
     
     let totalPendapatan = 0;
     const listPendapatan = pendapatanRaw.map(p => {
-      totalPendapatan += p.saldo;
-      return { kode: p.kode_akun, nama: p.nama_akun, total: p.saldo };
+      const totalNum = Number(p.saldo || 0);
+      totalPendapatan += totalNum;
+      return { kode: p.kode_akun, nama: p.nama_akun, total: totalNum };
     });
 
     // Fetch all beban (kode_akun kepala 5)
@@ -39,8 +40,9 @@ export async function getLaporan(req: Request, res: Response) {
 
     let totalBeban = 0;
     const listBeban = bebanRaw.map(b => {
-      totalBeban += b.saldo;
-      return { kode: b.kode_akun, nama: b.nama_akun, total: b.saldo };
+      const totalNum = Number(b.saldo || 0);
+      totalBeban += totalNum;
+      return { kode: b.kode_akun, nama: b.nama_akun, total: totalNum };
     });
 
     const labaBersih = totalPendapatan - totalBeban;
@@ -55,7 +57,7 @@ export async function getLaporan(req: Request, res: Response) {
       FROM jurnal_umum 
       WHERE kode_akun LIKE '3%' AND kode_akun != '3102'
     `);
-    const modalAwal = modalRaw[0]?.saldo || 0;
+    const modalAwal = Number(modalRaw[0]?.saldo || 0);
 
     // Ambil saldo Prive (kode_akun kepala 3, standar 3102 atau akun prive)
     const priveRaw = await db.query(`
@@ -63,7 +65,7 @@ export async function getLaporan(req: Request, res: Response) {
       FROM jurnal_umum 
       WHERE kode_akun = '3102'
     `);
-    const totalPrive = priveRaw[0]?.saldo || 0;
+    const totalPrive = Number(priveRaw[0]?.saldo || 0);
 
     const modalAkhir = modalAwal + labaBersih - totalPrive;
 
@@ -84,8 +86,9 @@ export async function getLaporan(req: Request, res: Response) {
 
     let totalAset = 0;
     const listAset = asetRaw.map(a => {
-      totalAset += a.saldo;
-      return { kode: a.kode_akun, nama: a.nama_akun, total: a.saldo };
+      const totalNum = Number(a.saldo || 0);
+      totalAset += totalNum;
+      return { kode: a.kode_akun, nama: a.nama_akun, total: totalNum };
     });
 
     // List all Liabilities (KODE KEPALA 2)
@@ -101,8 +104,9 @@ export async function getLaporan(req: Request, res: Response) {
 
     let totalKewajiban = 0;
     const listKewajiban = kewajibanRaw.map(k => {
-      totalKewajiban += k.saldo;
-      return { kode: k.kode_akun, nama: k.nama_akun, total: k.saldo };
+      const totalNum = Number(k.saldo || 0);
+      totalKewajiban += totalNum;
+      return { kode: k.kode_akun, nama: k.nama_akun, total: totalNum };
     });
 
     const totalKewajibanDanEkuitas = totalKewajiban + modalAkhir;

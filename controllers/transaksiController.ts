@@ -7,12 +7,17 @@ export async function getTransaksiForm(req: Request, res: Response) {
     const accounts = await db.query('SELECT * FROM akun ORDER BY kode_akun ASC');
     
     // Get all transactions to show in a database index list
-    const transactions = await db.query(`
+    const transactionsRaw = await db.query(`
       SELECT t.id_transaksi, t.tanggal, t.keterangan,
              (SELECT SUM(nominal) FROM transaksi_detail WHERE id_transaksi = t.id_transaksi AND jenis_mutasi = 'Debit') as total_debit
       FROM transaksi t
       ORDER BY t.tanggal DESC, t.id_transaksi DESC
     `);
+
+    const transactions = transactionsRaw.map(tx => ({
+      ...tx,
+      total_debit: Number(tx.total_debit || 0)
+    }));
 
     res.render('transaksi/form', {
       accounts,
